@@ -1,0 +1,34 @@
+package ms.cloud.guru.services;
+
+import java.util.UUID;
+import org.springframework.stereotype.Service;
+import ms.cloud.guru.web.model.Customer;
+
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+	@Override
+	public Customer getCustomerById(UUID custId) {
+		return Customer.builder().id(UUID.randomUUID()).CustName("Ram").build();
+	}
+
+	@Override
+	public Customer saveNewCustomer(Customer cust) {
+		return Customer.builder()
+				.id(UUID.randomUUID())
+				.build();
+	}
+
+	@Override
+	public void updateCust(UUID custId, Customer cust) {
+		
+	}
+	
+	@Override
+	public void deleteById(UUID custId) {
+		
+	}
+
+	
+
+}
