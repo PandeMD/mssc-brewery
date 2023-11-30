@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class BeerDto 
 {
+
 	private UUID id;
 	private String beeName;
 	private String beerStyle;

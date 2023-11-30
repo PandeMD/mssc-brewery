@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import ms.cloud.guru.web.model.BeerDto;
 import ms.cloud.guru.web.model.v2.BeerDtoV2;
 
 @Slf4j

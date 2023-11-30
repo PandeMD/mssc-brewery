@@ -1,6 +1,7 @@
 package ms.cloud.guru.services;
 
 import java.util.UUID;
+
 import ms.cloud.guru.web.model.Customer;
 
 public interface CustomerService {
