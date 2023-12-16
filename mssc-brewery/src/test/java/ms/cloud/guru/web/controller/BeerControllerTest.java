@@ -1,8 +1,18 @@
 package ms.cloud.guru.web.controller;
 
-import ms.cloud.guru.services.BeerService;
-import ms.cloud.guru.web.model.BeerDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -13,14 +23,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.UUID;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import ms.cloud.guru.services.BeerService;
+import ms.cloud.guru.web.model.BeerDto;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BeerController.class)
@@ -38,40 +44,39 @@ public class BeerControllerTest {
     BeerDto validBeer;
 
     @Before
-    public void setUp() {
-    	validBeer = BeerDto.builder()
-    			.id(UUID.randomUUID())
-                .beeName("Beer1")
+    public BeerDto setUp() {
+
+       return BeerDto.builder().id(UUID.randomUUID())
+                .beerName("Beer1")
                 .beerStyle("PALE_ALE")
                 .upc(123456789012L)
                 .build();
     }
 
-	@Test
-    public void testGetBeer() throws Exception {
-       
-		given(beerService.getBeerById(any(UUID.class))).willReturn(validBeer);
+    @Test
+    public void getBeer() throws Exception{
+        given(beerService.getBeerById(any(UUID.class))).willReturn(setUp());
 
-        mockMvc.perform(get("/api/v1/beer" + validBeer.getId().toString())
-        		.accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/beer/" + setUp().getId().toString())
+        		.accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.id", is(validBeer.getId().toString())))
-                .andExpect(jsonPath("$.beeName", is("Beer1")));
+                .andExpect(jsonPath("$.id", is(setUp().getId().toString())))
+                .andExpect(jsonPath("$.beerName", is("Beer1")));
     }
 
     @Test
-    public void testHandlePost() throws Exception {
+    public void handlePost() throws Exception {
         //given
-        BeerDto beerDto = validBeer;
+        BeerDto beerDto = setUp();
         beerDto.setId(null);
         BeerDto savedDto = BeerDto.builder().id(UUID.randomUUID())
-        					.beeName("New Beer").build();
+        					.beerName("New Beer").build();
         String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
         given(beerService.saveNewBeer(any())).willReturn(savedDto);
 
-        mockMvc.perform(post("/api/v1/beer")
+        mockMvc.perform(post("/api/v1/beer/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson))
                 .andExpect(status().isCreated());
@@ -79,14 +84,14 @@ public class BeerControllerTest {
     }
 
     @Test
-    public void testHendleUpdate() throws Exception {
+    public void handleUpdate() throws Exception {
         //given
-        BeerDto beerDto = validBeer;
+        BeerDto beerDto = setUp();
         beerDto.setId(null);
         String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
         //when
-        mockMvc.perform(put("/api/v1/beer" + UUID.randomUUID())
+        mockMvc.perform(put("/api/v1/beer/" + UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(beerDtoJson))
                 .andExpect(status().isNoContent());
